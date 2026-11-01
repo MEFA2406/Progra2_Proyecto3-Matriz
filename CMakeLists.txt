@@ -23,4 +23,8 @@ add_executable(Proyecto3_Matriz main.cpp
         Entidad.cpp
         Entidad.h
         Loot.cpp
-        Loot.h)
+        Loot.h
+        GestorCarnivoros.cpp
+        GestorCarnivoros.h
+        Matriz.cpp
+        Matriz.h)
