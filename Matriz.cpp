@@ -49,6 +49,7 @@ bool Matriz::setPosicion(int x, int y, Entidad *entidad) {
         return false;
     }
     matriz[x][y] = entidad;
+    return true;
 }
 
 void Matriz::eliminar(int x, int y) {
@@ -99,4 +100,5 @@ std::string Matriz::mostrar() const {
         }
         ss << std::endl;
     }
+    return ss.str();
 }

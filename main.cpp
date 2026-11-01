@@ -6,8 +6,11 @@
 #include "Armadura.h"
 #include "Carnivoro.h"
 #include "Casco.h"
+#include "Matriz.h"
 #include <sstream>
 #include <iomanip>
+
+#include "Matriz.h"
 
 using namespace std;
 
@@ -19,56 +22,9 @@ int main() {
 
     auto enemigo1 = new Carnivoro(1,1,1);
 
-    Entidad*** matriz;
-    matriz = new Entidad**[15];
-    for (int i=0;i<15;i++) {
-        matriz[i] = new Entidad*[15];
-        for (int j=0;j<15;j++) {
-            matriz[i][j] = nullptr;
-        }
-    }
 
-    matriz[enemigo1->obtenerFila()][enemigo1->obtenerColumna()] = enemigo1;
-    matriz[jugador->obtenerFila()][jugador->obtenerColumna()] = jugador;
-    cout << "      ";
-    for (int j = 0; j < 15; j++) {
-        cout << setw(2) << setfill('0') << j << "   ";
-    }
 
-    cout << endl << setfill(' ');
 
-    // Borde superior
-    cout << "    +";
-    for (int j = 0; j < 15; j++) {
-        cout << "----+";
-    }
-    cout << endl;
-
-    // Contenido de la matriz
-    for (int i = 0; i < 15; i++) {
-
-        cout << setw(2) << setfill('0') << i << "  ";
-        cout << setfill(' ');
-
-        for (int j = 0; j < 15; j++) {
-
-            if (matriz[i][j] == nullptr) {
-                cout << "|    ";
-            }
-            else {
-                cout << "| " << matriz[i][j]->obtenerSimbolo() << "  ";
-            }
-        }
-
-        cout << "|" << endl;
-
-        // Separación entre filas
-        cout << "    +";
-        for (int j = 0; j < 15; j++) {
-            cout << "----+";
-        }
-        cout << endl;
-    }
 
     cout<<"Vida: "<< jugador->getVida()<<endl;
     cout<<"Proteccion: "<<jugador->getProteccion()<<endl;
@@ -91,7 +47,16 @@ int main() {
     cout<<"Vida: "<< jugador->getVida()<<endl;
     cout<<"Proteccion: "<<jugador->getProteccion()<<endl;
 
+    Matriz* matriz2 = new Matriz();
+    cout<<matriz2->mostrar();
 
+    matriz2->setPosicion(1,1,enemigo1);
+    matriz2->setPosicion(5,5,jugador);
+
+    cout<<matriz2->mostrar();
+
+    delete enemigo1;
     delete jugador;
+    delete matriz2;
     return 0;
 }
