@@ -7,6 +7,8 @@
 #include "Carnivoro.h"
 #include "Casco.h"
 #include "Matriz.h"
+#include "SistemaJuego.h"
+#include "Menu.h"
 #include <sstream>
 #include <iomanip>
 
@@ -15,6 +17,7 @@
 using namespace std;
 
 int main() {
+    /*
     Personaje* jugador = new Jugador(5,5);
 
     jugador = new Casco(jugador);
@@ -55,8 +58,35 @@ int main() {
 
     cout<<matriz2->mostrar();
 
+    SistemaJuego sistema;
+
+    cout << sistema.obtenerMapa();
+
+    sistema.iniciar();
+
+    // Simular algunos movimientos del jugador.
+    sistema.moverJugador(0, 1);
+
+    this_thread::sleep_for(chrono::seconds(5));
+
+    sistema.detener();
+
+    cout << "\nEstado final:\n";
+
+    cout << sistema.obtenerMapa();
+
+    cout << "Vida: " << sistema.obtenerVidaJugador() << endl;
+
+    cout << "Proteccion: "
+         << sistema.obtenerProteccionJugador() << endl;
+
     delete enemigo1;
     delete jugador;
     delete matriz2;
+    */
+
+    Menu menu;
+    menu.initMenu();
+
     return 0;
 }

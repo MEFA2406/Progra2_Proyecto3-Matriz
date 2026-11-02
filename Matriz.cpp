@@ -25,6 +25,9 @@ Matriz::Matriz() {
 
 Matriz::~Matriz() {
     for (int i = 0; i < filas; i++) {
+        for (int j = 0; j < columnas; j++) {
+            delete matriz[i][j];
+        }
         delete[] matriz[i];
     }
     delete[] matriz;

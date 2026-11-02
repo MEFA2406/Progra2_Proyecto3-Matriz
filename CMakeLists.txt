@@ -27,4 +27,8 @@ add_executable(Proyecto3_Matriz main.cpp
         GestorCarnivoros.cpp
         GestorCarnivoros.h
         Matriz.cpp
-        Matriz.h)
+        Matriz.h
+        SistemaJuego.cpp
+        SistemaJuego.h
+        Menu.cpp
+        Menu.h)
