@@ -99,6 +99,7 @@ void Matriz::eliminar(int x, int y) {
     if (!posicionValida(x, y)) {
         return;
     }
+    delete matriz[x][y];
     matriz[x][y] = nullptr;
 }
 

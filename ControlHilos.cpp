@@ -32,6 +32,16 @@ bool ControlHilos::moverAleatorio(Entidad *entidad) {
 }
 
 bool ControlHilos::posicionVaciaAleatoria(int &fila, int &columna) {
+    for (int intento = 0; intento < 200; intento++) {
+        int f = rand() % matriz->getFilas();
+        int c = rand() % matriz->getColumnas();
+        if (matriz->getPosicion(f, c) == nullptr) {
+            fila = f;
+            columna = c;
+            return true;
+        }
+    }
+    return false;
 }
 
 ControlHilos::ControlHilos(Matriz *matriz, std::mutex &mutexMatriz, ControlTurnos &control) : control(control), matriz(matriz),mutexMatriz(mutexMatriz){
@@ -42,7 +52,7 @@ ControlHilos::~ControlHilos() {
 }
 
 void ControlHilos::iniciar() {
-    if (hilo.joinable()) {
+    if (!hilo.joinable()) {
         hilo = std::thread(&ControlHilos::ejecutar, this);
     }
 }

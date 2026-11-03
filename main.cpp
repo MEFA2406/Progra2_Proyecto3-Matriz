@@ -1,11 +1,15 @@
 #include <iostream>
 #include "SistemaJuego.h"
+#include <cstdlib>
+#include <ctime>
 
 using namespace std;
 
 // main TEMPORAL para probar la mecanica a mano (w/a/s/d).
 // Cada movimiento valido lanza un turno de los 4 hilos antes de redibujar.
 int main() {
+
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
     SistemaJuego juego;
     juego.iniciar();   // arranca los 4 hilos
     char tecla;
