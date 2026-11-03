@@ -10,11 +10,22 @@
 
 #include "Matriz.h"
 #include "Jugador.h"
+#include "Comida.h"
 #include "Carnivoro.h"
 #include "Casco.h"
 #include "Armadura.h"
 #include "Botas.h"
+#include "Planta.h"
+#include "Loot.h"
 #include "GestorCarnivoros.h"
+
+enum class ResultadoMovimiento {
+    INVALIDO,
+    MOVIO,
+    COMIO,
+    EQUIPO,
+    ATAQUE
+};
 
 class SistemaJuego {
 private:
@@ -32,9 +43,13 @@ private:
 
     void inicializarJugador();
     void inicializarCarnivoros();
+    void inicializarMapa();
 
-    bool agregarCarnivoro(Carnivoro* carnivoro);
-    void aplicarEquipo(Personaje* nuevo);
+    bool agregarCarnivoro(int nivel);
+    void aplicarEquipo(Personaje* nuevo); // agrega un decorator
+
+    bool colocarAleatorio(Entidad* entidad, int distanciaMinima);
+    void poner(Entidad* entidad, int distanciaMinima =0);
 
 public:
     SistemaJuego();
@@ -43,7 +58,7 @@ public:
     void iniciar();
     void detener();
 
-    bool moverJugador(int desplazamientoFila,
+    ResultadoMovimiento moverJugador(int desplazamientoFila,
                       int desplazamientoColumna);
 
     void equiparCasco();
@@ -54,6 +69,8 @@ public:
 
     int obtenerVidaJugador() const;
     int obtenerProteccionJugador() const;
+    int obtenerMovimientosJugador() const;
+
 };
 
 #endif // SISTEMAJUEGO_H

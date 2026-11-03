@@ -22,6 +22,9 @@ public:
     Matriz(const Matriz&) = delete;
     Matriz& operator=(const Matriz&) = delete;
 
+    int getFilas() const;
+    int getColumnas() const;
+
     bool posicionValida(int x,int y) const;
 
     Entidad* getPosicion(int x,int y);

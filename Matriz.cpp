@@ -33,6 +33,14 @@ Matriz::~Matriz() {
     delete[] matriz;
 }
 
+int Matriz::getFilas() const {
+    return filas;
+}
+
+int Matriz::getColumnas() const {
+    return columnas;
+}
+
 bool Matriz::posicionValida(int x, int y) const {
     return x >= 0 && x < filas && y >= 0 && y < columnas;
 }

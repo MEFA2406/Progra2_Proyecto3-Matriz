@@ -31,4 +31,6 @@ add_executable(Proyecto3_Matriz main.cpp
         SistemaJuego.cpp
         SistemaJuego.h
         Menu.cpp
-        Menu.h)
+        Menu.h
+        Planta.cpp
+        Planta.h)

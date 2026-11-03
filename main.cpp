@@ -1,87 +1,41 @@
 #include <iostream>
-#include "Equipamiento.h"
-#include "Personaje.h"
-#include "Jugador.h"
-#include "Botas.h"
-#include "Armadura.h"
-#include "Carnivoro.h"
-#include "Casco.h"
-#include "Matriz.h"
 #include "SistemaJuego.h"
-#include "Menu.h"
-#include <sstream>
-#include <iomanip>
-
-#include "Matriz.h"
 
 using namespace std;
 
 int main() {
-    /*
-    Personaje* jugador = new Jugador(5,5);
+    srand(time(nullptr));
 
-    jugador = new Casco(jugador);
-    jugador = new Botas(jugador);
+    SistemaJuego juego;
+    juego.iniciar();
+    char tecla;
 
-    auto enemigo1 = new Carnivoro(1,1,1);
+    while (juego.obtenerVidaJugador() > 0) {
+        cout<<juego.obtenerMapa();
+        cout<<"Vida: " << juego.obtenerVidaJugador()
+            <<" Proteccion: "<< juego.obtenerProteccionJugador()
+            <<" Movimientos: "<<juego.obtenerMovimientosJugador()<<endl;
+        cout<<"Mover (W/A/S/D , Q para salir: ";
+        cin>>tecla;
+        int df=0,dc=0; // desplazamientoFila, desplazamientoColumna
+        switch (tecla) {
+            case 'w': df=-1; break;
+            case 's': df=1; break;
+            case 'a': dc=-1; break;
+            case 'd': dc=1; break;
+            case 'q': return 0;
+            default: cout<<"Tecla no valida\n";continue;
+        }
 
+        switch (juego.moverJugador(df,dc)) {
+            case ResultadoMovimiento::INVALIDO: cout<<"Invalido"; break;
+            case  ResultadoMovimiento::COMIO: cout<<"Comio y recupero vida";break;
+            case  ResultadoMovimiento::EQUIPO: cout<<"Recogio equipamiento";break;
+            case  ResultadoMovimiento::ATAQUE: cout<<"Un carnivoro te ataco";break;
+            case  ResultadoMovimiento::MOVIO: break;
+        }
+    }
 
-
-
-
-    cout<<"Vida: "<< jugador->getVida()<<endl;
-    cout<<"Proteccion: "<<jugador->getProteccion()<<endl;
-
-    cout<<"Primer ataque 5"<<endl;
-    enemigo1->atacar(jugador);
-
-    cout<<"Vida: "<< jugador->getVida()<<endl;
-    cout<<"Proteccion: "<<jugador->getProteccion()<<endl;
-
-    cout<<"Segundo ataque 5"<<endl;
-    enemigo1->atacar(jugador);
-
-    cout<<"Vida: "<< jugador->getVida()<<endl;
-    cout<<"Proteccion: "<<jugador->getProteccion()<<endl;
-
-    enemigo1->setNivel(2);
-    enemigo1->atacar(jugador);
-
-    cout<<"Vida: "<< jugador->getVida()<<endl;
-    cout<<"Proteccion: "<<jugador->getProteccion()<<endl;
-
-    Matriz* matriz2 = new Matriz();
-    cout<<matriz2->mostrar();
-
-    matriz2->setPosicion(1,1,enemigo1);
-    matriz2->setPosicion(5,5,jugador);
-
-    cout<<matriz2->mostrar();
-*/
-    SistemaJuego sistema;
-
-    cout << sistema.obtenerMapa();
-
-    sistema.iniciar();
-
-    // Simular algunos movimientos del jugador.
-    sistema.moverJugador(0, 1);
-
-    this_thread::sleep_for(chrono::seconds(50));
-
-    sistema.detener();
-
-    cout << "\nEstado final:\n";
-
-    cout << sistema.obtenerMapa();
-
-    cout << "Vida: " << sistema.obtenerVidaJugador() << endl;
-
-    cout << "Proteccion: "
-         << sistema.obtenerProteccionJugador() << endl;
-/*
-    Menu menu;
-    menu.initMenu();
-*/
+    cout<<juego.obtenerMapa() << "Has muerto. Fin del juego\n";
     return 0;
 }

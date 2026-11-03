@@ -8,13 +8,20 @@
 
 #include "Entidad.h"
 
+enum class TipoLoot{CASCO,BOTAS,ARMADURA};
+
 
 class Loot : public Entidad{
 private:
-    std::string nombre;
+    TipoLoot tipo;
 public:
+    Loot(TipoLoot tipo,int fila=0,int col=0);
 
+    TipoLoot getTipo() const;
+
+    char obtenerSimbolo() const override;
 };
+
 
 
 #endif //PROYECTO3_MATRIZ_LOOT_H

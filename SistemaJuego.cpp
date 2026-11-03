@@ -5,6 +5,9 @@
 #include "SistemaJuego.h"
 
 #include <iostream>
+#include <cstdlib>
+#include <ctime>
+
 
 SistemaJuego::SistemaJuego()
     : matriz(),
@@ -16,6 +19,7 @@ SistemaJuego::SistemaJuego()
 
     inicializarJugador();
     inicializarCarnivoros();
+    inicializarMapa();
 }
 
 SistemaJuego::~SistemaJuego() {
@@ -39,36 +43,93 @@ void SistemaJuego::inicializarJugador() {
 
 void SistemaJuego::inicializarCarnivoros() {
 
+    int cantidadCarnivoros = 4;
     carnivoros = new Carnivoro*[capacidadCarnivoros];
 
     for (int i = 0; i < capacidadCarnivoros; i++) {
         carnivoros[i] = nullptr;
     }
 
-    agregarCarnivoro(new Carnivoro(3, 4, 1));
-    agregarCarnivoro(new Carnivoro(10, 5, 2));
+    for (int i=0;i<cantidadCarnivoros;i++) {
+        agregarCarnivoro(1);
+    }
 }
 
-bool SistemaJuego::agregarCarnivoro(Carnivoro* carnivoro) {
+void SistemaJuego::inicializarMapa() {
+    int cantidadPlantas =12;
+    int cantidadComidas = 8;
+    int cantidadLoot = 2;
 
-    if (cantidadCarnivoros >= capacidadCarnivoros ||
-        carnivoro == nullptr) {
-        return false;
+    for (int i=0; i<cantidadPlantas; i++) {
+        poner(new Planta());
+    }
+
+    for (int i=0;i<cantidadComidas;i++) {
+        poner(new Comida((rand() % 5),0,0));
+    }
+
+    for (int i=0;i<cantidadLoot;i++) {
+        poner(new Loot(TipoLoot::CASCO));
+        poner(new Loot(TipoLoot::BOTAS));
+        poner(new Loot(TipoLoot::ARMADURA));
+    }
+}
+
+bool SistemaJuego::colocarAleatorio(Entidad *entidad, int distanciaMinima) {
+    int filaJugador = jugador->obtenerFila();
+    int columnaJugador = jugador->obtenerColumna();
+
+    for (int intento = 0; intento < 500; intento++) {
+
+        int fila = rand() % matriz.getFilas();
+        int columna = rand() % matriz.getColumnas();
+
+        int dFila = fila - filaJugador;
+        int dColumna = columna - columnaJugador;
+
+        if (dFila < 0) dFila = -dFila;
+        if (dColumna < 0) dColumna = -dColumna;
+
+        if (dFila + dColumna < distanciaMinima) {
+            continue;
         }
 
-    bool colocado = matriz.setPosicion(
-        carnivoro->obtenerFila(),
-        carnivoro->obtenerColumna(),
-        carnivoro
-    );
+        if (matriz.setPosicion(fila, columna, entidad)) {
+            return true;
+        }
+    }
 
-    if (!colocado) {
+    return false;
+}
+
+
+void SistemaJuego::poner(Entidad *entidad, int distanciaMinima) {
+    if (!colocarAleatorio(entidad,distanciaMinima)) {
+        delete entidad;
+    }
+}
+
+int SistemaJuego::obtenerMovimientosJugador() const {
+    std::lock_guard<std::mutex> bloqueo(mutexMatriz);
+
+    return jugador->getMovimientos();
+}
+
+bool SistemaJuego::agregarCarnivoro(int nivel) {
+
+    if (cantidadCarnivoros >= capacidadCarnivoros) {
         return false;
     }
 
-    carnivoros[cantidadCarnivoros] = carnivoro;
-    cantidadCarnivoros++;
+    Carnivoro* nuevo = new Carnivoro(nivel,0,0);
+    int distaciaJugador =3;
 
+    if (!colocarAleatorio(nuevo,distaciaJugador)) {
+        delete nuevo;
+        return false;
+    }
+    carnivoros[cantidadCarnivoros] = nuevo;
+    cantidadCarnivoros++;
     return true;
 }
 
@@ -114,7 +175,7 @@ void SistemaJuego::detener() {
     }
 }
 
-bool SistemaJuego::moverJugador(
+ResultadoMovimiento SistemaJuego::moverJugador(
     int desplazamientoFila,
     int desplazamientoColumna
 ) {
@@ -128,14 +189,46 @@ bool SistemaJuego::moverJugador(
     int nuevaColumna = columnaActual + desplazamientoColumna;
 
     if (!matriz.posicionValida(nuevaFila, nuevaColumna)) {
-        return false;
+        return ResultadoMovimiento::INVALIDO;
     }
 
-    if (matriz.getPosicion(nuevaFila, nuevaColumna) != nullptr) {
-        return false;
+    ResultadoMovimiento resultado = ResultadoMovimiento::MOVIO;
+    Entidad* destino = matriz.getPosicion(nuevaFila, nuevaColumna);
+
+    if (destino!= nullptr) {
+        if (dynamic_cast<Planta*>(destino)!= nullptr) {
+            return ResultadoMovimiento::INVALIDO;
+        }
+        if (auto comida = dynamic_cast<Comida*>(destino)) {
+            jugador->recuperarVida(comida->getValor());
+            matriz.eliminar(nuevaFila,nuevaColumna);
+            resultado = ResultadoMovimiento::COMIO;
+        }
+        else if (auto loot = dynamic_cast<Loot*>(destino)) {
+            TipoLoot tipo = loot->getTipo();
+            matriz.eliminar(nuevaFila,nuevaColumna);
+
+            switch (tipo) {
+                case TipoLoot::CASCO: aplicarEquipo(new Casco(jugador)); break;
+                case TipoLoot::BOTAS: aplicarEquipo(new Botas(jugador)); break;
+                case TipoLoot::ARMADURA: aplicarEquipo(new Armadura(jugador));break;
+            }
+            resultado = ResultadoMovimiento::EQUIPO;
+        }
+        else if (auto carnivoro = dynamic_cast<Carnivoro*>(destino)) {
+            carnivoro->atacar(jugador);
+            jugador->incrementarMovimientos();
+            return ResultadoMovimiento::ATAQUE;
+        }
+        else {
+            return ResultadoMovimiento::INVALIDO;
+        }
     }
 
-    return matriz.mover(filaActual,columnaActual,nuevaFila,nuevaColumna);
+    matriz.mover(filaActual,columnaActual,nuevaFila,nuevaColumna);
+    jugador->incrementarMovimientos();
+
+    return resultado;
 }
 
 std::string SistemaJuego::obtenerMapa() {

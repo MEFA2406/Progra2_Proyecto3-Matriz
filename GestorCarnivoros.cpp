@@ -3,6 +3,8 @@
 //
 
 #include "GestorCarnivoros.h"
+#include <chrono>
+#include <cstdlib>
 
 void GestorCarnivoros::ejecutar() {
     while (activo) {
