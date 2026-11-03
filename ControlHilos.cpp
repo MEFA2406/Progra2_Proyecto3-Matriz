@@ -7,10 +7,12 @@
 void ControlHilos::ejecutar() {
     int ultimoTurno = 0;
     while (control.esperarTurno(ultimoTurno)) {
-        std::lock_guard<std::mutex> bloqueo(mutexMatriz);
-        actualizar();
+        {
+            std::lock_guard<std::mutex> bloqueo(mutexMatriz);
+            actualizar();
+        }
+        control.terminarTurno();
     }
-    control.terminarTurno();
 }
 
 bool ControlHilos::moverAleatorio(Entidad *entidad) {
