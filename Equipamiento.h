@@ -15,6 +15,9 @@ public:
     Equipamiento(Personaje* personaje, int proteccion);
     virtual ~Equipamiento();
 
+    Equipamiento(const Equipamiento&) = delete;
+    Equipamiento& operator=(const Equipamiento&) = delete;
+
     int getVida() const override;
     int getProteccion() const override;
     int getMovimientos() const override;
@@ -23,9 +26,9 @@ public:
     void recuperarVida(int cantidad) override;
     void incrementarMovimientos() override;
 
-    int obtenerFila() const;
-    int obtenerColumna() const;
-    void cambiarPosicion(int fila,int columna);
+    int obtenerFila() const override;
+    int obtenerColumna() const override;
+    void cambiarPosicion(int fila,int columna) override;
     char obtenerSimbolo() const override;
 
 };

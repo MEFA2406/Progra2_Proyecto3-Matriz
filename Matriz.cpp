@@ -52,7 +52,39 @@ bool Matriz::setPosicion(int x, int y, Entidad *entidad) {
         return false;
     }
     matriz[x][y] = entidad;
+    entidad->cambiarPosicion(x,y);
     return true;
+}
+
+bool Matriz::mover(int origenX, int origenY, int destinoX, int destinoY) {
+    if (!posicionValida(origenX, origenY) || !posicionValida(destinoX, destinoY)) {
+        return false;
+    }
+    Entidad* entidad = matriz[origenX][origenY];
+    if (entidad == nullptr || matriz[destinoX][destinoY] != nullptr) {
+        return false;
+    }
+    matriz[destinoX][destinoY] = entidad;
+    matriz[origenX][origenY] = nullptr;
+    entidad->cambiarPosicion(destinoX, destinoY);
+    return true;
+}
+
+bool Matriz::reemplazar(int x, int y, Entidad *nueva) {
+    if (nueva == nullptr || !posicionValida(x, y) || matriz[x][y] == nullptr) {
+        return false;
+    }
+    matriz[x][y] = nueva;
+    return true;
+}
+
+Entidad * Matriz::quitar(int x, int y) {
+    if (!posicionValida(x, y)) {
+        return nullptr;
+    }
+    Entidad* entidad = matriz[x][y];
+    matriz[x][y] = nullptr;
+    return entidad;
 }
 
 void Matriz::eliminar(int x, int y) {
@@ -65,7 +97,7 @@ void Matriz::eliminar(int x, int y) {
 std::string Matriz::mostrar() const {
     std::stringstream ss;
     ss << "      ";
-    for (int j = 0; j < 15; j++) {
+    for (int j = 0; j < columnas; j++) {
         ss << std::setw(2) << std::setfill('0') << j << "   ";
     }
 
@@ -73,18 +105,18 @@ std::string Matriz::mostrar() const {
 
     // Borde superior
     ss << "    +";
-    for (int j = 0; j < 15; j++) {
+    for (int j = 0; j < columnas; j++) {
         ss << "----+";
     }
     ss << std::endl;
 
     // Contenido de la matriz
-    for (int i = 0; i < 15; i++) {
+    for (int i = 0; i < filas; i++) {
 
         ss << std::setw(2) << std::setfill('0') << i << "  ";
         ss << std::setfill(' ');
 
-        for (int j = 0; j < 15; j++) {
+        for (int j = 0; j < columnas; j++) {
 
             if (matriz[i][j] == nullptr) {
                 ss << "|    ";
@@ -98,7 +130,7 @@ std::string Matriz::mostrar() const {
 
         // Separación entre filas
         ss << "    +";
-        for (int j = 0; j < 15; j++) {
+        for (int j = 0; j < columnas; j++) {
             ss << "----+";
         }
         ss << std::endl;

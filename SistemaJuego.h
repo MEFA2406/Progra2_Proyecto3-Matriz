@@ -11,6 +11,9 @@
 #include "Matriz.h"
 #include "Jugador.h"
 #include "Carnivoro.h"
+#include "Casco.h"
+#include "Armadura.h"
+#include "Botas.h"
 #include "GestorCarnivoros.h"
 
 class SistemaJuego {
@@ -31,6 +34,7 @@ private:
     void inicializarCarnivoros();
 
     bool agregarCarnivoro(Carnivoro* carnivoro);
+    void aplicarEquipo(Personaje* nuevo);
 
 public:
     SistemaJuego();
@@ -41,6 +45,10 @@ public:
 
     bool moverJugador(int desplazamientoFila,
                       int desplazamientoColumna);
+
+    void equiparCasco();
+    void equiparBotas();
+    void equiparArmadura();
 
     std::string obtenerMapa();
 

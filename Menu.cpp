@@ -17,7 +17,8 @@ void Menu::menuAccion() {
         cin >> x;
         cout<<"y:";
         cin >> y;
-        jugador->cambiarPosicion(x,y);
+        matriz->mover(jugador->obtenerFila(),
+            jugador->obtenerColumna(),x,y);
     }while (jugador->getVida()>0);
 }
 

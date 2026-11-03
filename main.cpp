@@ -57,7 +57,7 @@ int main() {
     matriz2->setPosicion(5,5,jugador);
 
     cout<<matriz2->mostrar();
-
+*/
     SistemaJuego sistema;
 
     cout << sistema.obtenerMapa();
@@ -67,7 +67,7 @@ int main() {
     // Simular algunos movimientos del jugador.
     sistema.moverJugador(0, 1);
 
-    this_thread::sleep_for(chrono::seconds(5));
+    this_thread::sleep_for(chrono::seconds(50));
 
     sistema.detener();
 
@@ -79,14 +79,9 @@ int main() {
 
     cout << "Proteccion: "
          << sistema.obtenerProteccionJugador() << endl;
-
-    delete enemigo1;
-    delete jugador;
-    delete matriz2;
-    */
-
+/*
     Menu menu;
     menu.initMenu();
-
+*/
     return 0;
 }

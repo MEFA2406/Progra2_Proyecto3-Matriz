@@ -19,19 +19,9 @@ SistemaJuego::SistemaJuego()
 }
 
 SistemaJuego::~SistemaJuego() {
-
-    // Primero detener el hilo.
     detener();
 
     delete gestorCarnivoros;
-
-    // La cadena de Decorators libera al jugador original.
-    delete jugador;
-
-    // Liberar los carnívoros.
-    for (int i = 0; i < cantidadCarnivoros; i++) {
-        delete carnivoros[i];
-    }
 
     delete[] carnivoros;
 }
@@ -82,6 +72,26 @@ bool SistemaJuego::agregarCarnivoro(Carnivoro* carnivoro) {
     return true;
 }
 
+void SistemaJuego::aplicarEquipo(Personaje *nuevo) {
+    matriz.reemplazar(jugador->obtenerFila(),jugador->obtenerColumna(),nuevo);
+    jugador = nuevo;
+}
+
+void SistemaJuego::equiparCasco() {
+    std::lock_guard<std::mutex> bloqueo(mutexMatriz);
+    aplicarEquipo(new Casco(jugador));
+}
+
+void SistemaJuego::equiparBotas() {
+    std::lock_guard<std::mutex> bloqueo(mutexMatriz);
+    aplicarEquipo(new Botas(jugador));
+}
+
+void SistemaJuego::equiparArmadura() {
+    std::lock_guard<std::mutex> bloqueo(mutexMatriz);
+    aplicarEquipo(new Armadura(jugador));
+}
+
 void SistemaJuego::iniciar() {
 
     if (gestorCarnivoros == nullptr) {
@@ -125,13 +135,7 @@ bool SistemaJuego::moverJugador(
         return false;
     }
 
-    matriz.eliminar(filaActual, columnaActual);
-
-    jugador->cambiarPosicion(nuevaFila, nuevaColumna);
-
-    matriz.setPosicion(nuevaFila, nuevaColumna, jugador);
-
-    return true;
+    return matriz.mover(filaActual,columnaActual,nuevaFila,nuevaColumna);
 }
 
 std::string SistemaJuego::obtenerMapa() {

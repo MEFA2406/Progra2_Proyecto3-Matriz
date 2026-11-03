@@ -19,10 +19,19 @@ public:
     Matriz();
     virtual ~Matriz();
 
+    Matriz(const Matriz&) = delete;
+    Matriz& operator=(const Matriz&) = delete;
+
     bool posicionValida(int x,int y) const;
 
     Entidad* getPosicion(int x,int y);
     bool setPosicion(int x,int y,Entidad* entidad);
+
+    bool mover(int origenX, int origenY, int destinoX, int destinoY);
+
+    bool reemplazar(int x,int y, Entidad* nueva);
+
+    Entidad* quitar(int x,int y);
 
     void eliminar(int x,int y);
 

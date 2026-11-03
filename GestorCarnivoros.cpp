@@ -36,9 +36,7 @@ void GestorCarnivoros::moverCarnivoros() {
         Entidad* destino = matriz->getPosicion(nuevaFila, nuevaColumna);
 
         if (destino == nullptr) {
-            matriz->eliminar(filaActual, columnaActual);
-            carnivoro->cambiarPosicion(nuevaFila, nuevaColumna);
-            matriz->setPosicion(nuevaFila, nuevaColumna, carnivoro);
+            matriz->mover(filaActual,columnaActual,nuevaFila,nuevaColumna);
         }
         else {
             Personaje* personaje = dynamic_cast<Personaje*>(destino);
