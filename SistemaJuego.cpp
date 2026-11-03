@@ -8,14 +8,21 @@
 #include <cstdlib>
 #include <ctime>
 
+#include "GestorMovedor.h"
+#include "GestorPlantas.h"
+
 
 SistemaJuego::SistemaJuego()
     : matriz(),
       jugador(nullptr),
-      carnivoros(nullptr),
       cantidadCarnivoros(0),
       capacidadCarnivoros(10),
-      gestorCarnivoros(nullptr) {
+      control(CANTIDAD_HILOS),
+      hilosIniciados(false)  {
+
+    for (int i=0;i< CANTIDAD_HILOS;i++) {
+        hilos[i] = nullptr;
+    }
 
     inicializarJugador();
     inicializarCarnivoros();
@@ -24,10 +31,6 @@ SistemaJuego::SistemaJuego()
 
 SistemaJuego::~SistemaJuego() {
     detener();
-
-    delete gestorCarnivoros;
-
-    delete[] carnivoros;
 }
 
 void SistemaJuego::inicializarJugador() {
@@ -44,12 +47,6 @@ void SistemaJuego::inicializarJugador() {
 void SistemaJuego::inicializarCarnivoros() {
 
     int cantidadCarnivoros = 4;
-    carnivoros = new Carnivoro*[capacidadCarnivoros];
-
-    for (int i = 0; i < capacidadCarnivoros; i++) {
-        carnivoros[i] = nullptr;
-    }
-
     for (int i=0;i<cantidadCarnivoros;i++) {
         agregarCarnivoro(1);
     }
@@ -65,7 +62,7 @@ void SistemaJuego::inicializarMapa() {
     }
 
     for (int i=0;i<cantidadComidas;i++) {
-        poner(new Comida((rand() % 5),0,0));
+        poner(new Comida((rand() % 7)+2,0,0));
     }
 
     for (int i=0;i<cantidadLoot;i++) {
@@ -128,7 +125,6 @@ bool SistemaJuego::agregarCarnivoro(int nivel) {
         delete nuevo;
         return false;
     }
-    carnivoros[cantidadCarnivoros] = nuevo;
     cantidadCarnivoros++;
     return true;
 }
@@ -138,47 +134,54 @@ void SistemaJuego::aplicarEquipo(Personaje *nuevo) {
     jugador = nuevo;
 }
 
-void SistemaJuego::equiparCasco() {
-    std::lock_guard<std::mutex> bloqueo(mutexMatriz);
-    aplicarEquipo(new Casco(jugador));
-}
-
-void SistemaJuego::equiparBotas() {
-    std::lock_guard<std::mutex> bloqueo(mutexMatriz);
-    aplicarEquipo(new Botas(jugador));
-}
-
-void SistemaJuego::equiparArmadura() {
-    std::lock_guard<std::mutex> bloqueo(mutexMatriz);
-    aplicarEquipo(new Armadura(jugador));
-}
-
 void SistemaJuego::iniciar() {
 
-    if (gestorCarnivoros == nullptr) {
-
-        gestorCarnivoros = new GestorCarnivoros(
-            carnivoros,
-            cantidadCarnivoros,
-            &matriz,
-            mutexMatriz
-        );
+    if (hilosIniciados) {
+        return;
     }
 
-    gestorCarnivoros->iniciar();
+    control.reiniciar();
+
+    hilos[0] = new GestorCarnivoros(&matriz, mutexMatriz,control);
+    hilos[1] = new GestorComida(&matriz, mutexMatriz,control);
+    hilos[2] = new GestorEquipamiento(&matriz, mutexMatriz,control);
+    hilos[3] = new GestorPlantas(&matriz, mutexMatriz,control);
+
+    for (int i=0; i< CANTIDAD_HILOS; i++) {
+        hilos[i]->iniciar();
+    }
+
+    hilosIniciados = true;
 }
 
 void SistemaJuego::detener() {
 
-    if (gestorCarnivoros != nullptr) {
-        gestorCarnivoros->detener();
+    if (!hilosIniciados) {
+        return;
     }
+
+    control.apagar();
+
+    for (int i=0;i<CANTIDAD_HILOS;i++) {
+        hilos[i]->detener();
+    }
+    for (int i=0;i<CANTIDAD_HILOS;i++) {
+        delete hilos[i];
+        hilos[i] = nullptr;
+    }
+    hilosIniciados = false;
 }
 
-ResultadoMovimiento SistemaJuego::moverJugador(
-    int desplazamientoFila,
-    int desplazamientoColumna
-) {
+ResultadoMovimiento SistemaJuego::ejecutarTurno(int desplazamientoFila, int desplazamientoColumna) {
+    ResultadoMovimiento resultado = moverJugador(desplazamientoFila, desplazamientoColumna);
+
+    if (resultado != ResultadoMovimiento::INVALIDO && hilosIniciados) {
+        control.avanzarYEsperar();
+    }
+    return resultado;
+}
+
+ResultadoMovimiento SistemaJuego::moverJugador(int desplazamientoFila,int desplazamientoColumna) {
 
     std::lock_guard<std::mutex> bloqueo(mutexMatriz);
 

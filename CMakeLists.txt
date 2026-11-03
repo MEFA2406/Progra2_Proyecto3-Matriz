@@ -33,4 +33,12 @@ add_executable(Proyecto3_Matriz main.cpp
         Menu.cpp
         Menu.h
         Planta.cpp
-        Planta.h)
+        Planta.h
+        ControlTurnos.cpp
+        ControlTurnos.h
+        ControlHilos.cpp
+        ControlHilos.h
+        GestorMovedor.cpp
+        GestorMovedor.h
+        GestorPlantas.cpp
+        GestorPlantas.h)

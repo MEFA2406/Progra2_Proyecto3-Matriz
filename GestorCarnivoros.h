@@ -10,26 +10,14 @@
 #include <atomic>
 
 #include "Carnivoro.h"
+#include "ControlHilos.h"
 #include "Matriz.h"
 
-class GestorCarnivoros {
-    Carnivoro** carnivoros;
-    int cantidad;
-
-    Matriz* matriz;
-    std::mutex& mutexMatriz;
-
-    std::thread hilo;
-    std::atomic<bool> activo;
-
-    void ejecutar();
-    void moverCarnivoros();
+class GestorCarnivoros : public ControlHilos{
+protected:
+    void actualizar() override;
 public:
-    GestorCarnivoros(Carnivoro** carnivoros, int cantidad,Matriz* matriz, std::mutex& mutexMatriz);
-    ~GestorCarnivoros();
-
-    void iniciar();
-    void detener();
+    GestorCarnivoros(Matriz* matriz, std::mutex& mutexMatriz, ControlTurnos& controlTurnos);
 };
 
 

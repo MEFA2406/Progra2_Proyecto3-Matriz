@@ -13,7 +13,7 @@ TipoLoot Loot::getTipo() const {
 
 char Loot::obtenerSimbolo() const {
     switch (tipo) {
-        case TipoLoot::CASCO:    return 'C';
+        case TipoLoot::CASCO:    return 'H';
         case TipoLoot::BOTAS:    return 'B';
         case TipoLoot::ARMADURA: return 'A';
     }

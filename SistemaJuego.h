@@ -33,13 +33,14 @@ private:
 
     Personaje* jugador;
 
-    Carnivoro** carnivoros;
     int cantidadCarnivoros;
     int capacidadCarnivoros;
 
     mutable std::mutex mutexMatriz;
-
-    GestorCarnivoros* gestorCarnivoros;
+    static constexpr int CANTIDAD_HILOS = 4;
+    ControlTurnos control;
+    ControlHilos* hilos[CANTIDAD_HILOS];
+    bool hilosIniciados;
 
     void inicializarJugador();
     void inicializarCarnivoros();
@@ -58,12 +59,8 @@ public:
     void iniciar();
     void detener();
 
-    ResultadoMovimiento moverJugador(int desplazamientoFila,
-                      int desplazamientoColumna);
-
-    void equiparCasco();
-    void equiparBotas();
-    void equiparArmadura();
+    ResultadoMovimiento ejecutarTurno(int desplazamientoFila,int desplazamientoColumna);
+    ResultadoMovimiento moverJugador(int desplazamientoFila, int desplazamientoColumna);
 
     std::string obtenerMapa();
 
